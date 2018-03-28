@@ -1,0 +1,5 @@
+打customer 包命令
+mvn clean package -P customer -Dmaven.test.skip=true
+
+打 producter 包命令
+mvn clean package -P producer -Dmaven.test.skip=true

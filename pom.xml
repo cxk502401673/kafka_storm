@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com</groupId>
+    <artifactId>kafka_storm</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <storm-core>1.1.1</storm-core>
+        <storm-kafka>1.1.1</storm-kafka>
+        <scala-version>2.11</scala-version>
+        <kafka.version>1.0.0</kafka.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.version>3.2.14.RELEASE</spring.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-kafka</artifactId>
+            <version>${storm-kafka}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_${scala-version}</artifactId>
+            <version>${kafka.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-core</artifactId>
+            <version>${storm-core}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka.version}</version>
+        </dependency>
+        <!-- spring-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+    </dependencies>
+    <build>
+
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+                <!-- 不打包test中 。java文件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <profiles>
+        <profile>
+            <id>producer</id>
+            <build>
+                <plugins>
+                    <!-- 设置源文件编码方式 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.7</source>
+                            <target>1.7</target>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <archive>
+                                <!--
+                                    生成的jar中，不要包含pom.xml和pom.properties这两个文件
+                                -->
+                                <addMavenDescriptor>false</addMavenDescriptor>
+
+                                <!-- Manifest specific configuration -->
+                                <manifest>
+                                    <!--
+                                        是否要把第三方jar放到manifest的classpath中
+                                    -->
+                                    <addClasspath>true</addClasspath>
+                                    <!--
+                                       生成的manifest中classpath的前缀，因为要把第三方jar放到clib目录下，所以classpath的前缀是clib/
+                                   -->
+                                    <classpathPrefix>/</classpathPrefix>
+                                    <!--
+                                        应用的main class
+                                    -->
+                                    <mainClass>com.cxk.producter.ProducerMain</mainClass>
+                                </manifest>
+                            </archive>
+                            <!--
+                                过滤掉不希望包含在jar中的文件
+                            -->
+                            <excludes>
+                            <exclude>src/main/java/customer/</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/java/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>customer</id>
+            <build>
+                <plugins>
+                    <!-- 设置源文件编码方式 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.7</source>
+                            <target>1.7</target>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <archive>
+                                <!--
+                                    生成的jar中，不要包含pom.xml和pom.properties这两个文件
+                                -->
+                                <addMavenDescriptor>false</addMavenDescriptor>
+
+                                <!-- Manifest specific configuration -->
+                                <manifest>
+                                    <!--
+                                        是否要把第三方jar放到manifest的classpath中
+                                    -->
+                                    <addClasspath>true</addClasspath>
+                                    <!--
+                                       生成的manifest中classpath的前缀，因为要把第三方jar放到clib目录下，所以classpath的前缀是clib/
+                                   -->
+                                    <classpathPrefix>/</classpathPrefix>
+                                    <!--
+                                        应用的main class
+                                    -->
+                                    <mainClass>com.cxk.customer.storm.topology.MyKafkaTopology</mainClass>
+                                </manifest>
+                            </archive>
+                            <!--
+                                过滤掉不希望包含在jar中的文件
+                            -->
+
+                            <excludes>
+                                <exclude>src/main/java/producter</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/java/assembly/assembly_customer.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
