@@ -3,6 +3,7 @@ package com.cxk.customer.storm.topology;
 
 import com.cxk.customer.storm.bolt.MyKafkaBolt;
 import com.cxk.customer.storm.entity.Student;
+import com.cxk.customer.storm.kryo.StudentSerializable;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
@@ -63,8 +64,8 @@ public class MyKafkaTopology {
         //禁止序列化器回退到Java的序列化机制
        // setFallBackOnJavaSerialization(config,false);
 
-        //注册 student类，采用storm自带的Kryo序列化序列化器
-        config.registerMetricsConsumer(Student.class);
+        //注册 student类，采用storm自带的Kryo序列化序列化器,StudentSerializable 实现了只序列化部分字段
+        config.registerSerialization(Student.class, StudentSerializable.class);
         if(args.length>0){
 
             try {
