@@ -2,6 +2,7 @@ package com.cxk.customer.storm.topology;
 
 
 import com.cxk.customer.storm.bolt.MyKafkaBolt;
+import com.cxk.customer.storm.entity.Student;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
@@ -48,7 +49,6 @@ public class MyKafkaTopology {
         spoutConfig.socketTimeoutMs=60;
         //定义输出为string类型
         spoutConfig.scheme=new SchemeAsMultiScheme(new StringScheme());
-
         TopologyBuilder builder=new TopologyBuilder();
         //引用spout，并发度设为1
         builder.setSpout("spout", new KafkaSpout(spoutConfig),1);
@@ -60,6 +60,11 @@ public class MyKafkaTopology {
         config.setDebug(true);
         // 设置work数量
         config.setNumWorkers(1);
+        //禁止序列化器回退到Java的序列化机制
+       // setFallBackOnJavaSerialization(config,false);
+
+        //注册 student类，采用storm自带的Kryo序列化序列化器
+        config.registerMetricsConsumer(Student.class);
         if(args.length>0){
 
             try {
