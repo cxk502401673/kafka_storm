@@ -34,7 +34,7 @@ public class MystudentTopology {
         //禁止序列化器回退到Java的序列化机制
        // setFallBackOnJavaSerialization(config,false);
 
-        //注册 student类，采用storm自带的Kryo序列化序列化器,StudentSerializable 实现了只序列化部分字段
+        //注册 student类，采用storm自带的Kryo序列化序列化器,StudentSerializable 实现了只序列化部分字段（未完成）
         config.registerSerialization(Student.class, StudentSerializable.class);
         if(args.length>0){
 

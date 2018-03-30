@@ -10,6 +10,7 @@ import com.esotericsoftware.kryo.io.Output;
  * 18/3/30
  *
  * @author chenxiaokai
+ *   未完成
  *
  **/
 public class StudentSerializable extends Serializer<Student>{
