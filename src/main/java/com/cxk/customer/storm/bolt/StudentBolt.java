@@ -20,6 +20,6 @@ public class StudentBolt  extends BaseBasicBolt{
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-
+        System.out.println("我是branch1的代码");
     }
 }
